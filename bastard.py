@@ -16,12 +16,14 @@ class Bastard():
 
         # init client
         self._client = client.Client(cookies)
+
+
         # hooks
         self._client.on_connect.add_observer(self._on_connect)
         self._client.on_disconnect.add_observer(self._on_disconnect)
         self._client.on_message.add_observer(self._on_message)
 
-        self.gaia_id = "117675644336605123143" # the original bastardbot
+        #self.gaia_id = "113384228098585290709" # the original bastardbot
 
 
     def loop(self):
@@ -32,6 +34,7 @@ class Bastard():
 
     def _on_connect(self):
         """Handle connecting for the first time."""
+        self.gaia_id = self._client.self_user_id.gaia_id
         print ("Connected!")
 
 
@@ -64,4 +67,4 @@ except KeyboardInterrupt:
     print("Keyboard interrupt.")
 
 
-print("Quitting.")
+
