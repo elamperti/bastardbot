@@ -13,6 +13,11 @@ class BastardSQL():
         self.cursor.executescript(sql)
         pass
 
+    def commit(self):
+    	"""Write last operations in the database"""
+    	#FIXME add try-catch?
+    	self.conn.commit()
+
     def get_conversations(self):
         """Returns an iterable list of conversations"""
         return self.cursor.execute("SELECT * FROM [Conversations]")

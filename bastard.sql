@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS [Conversations];
 CREATE TABLE [Conversations]
 (
-    [conv_id] INTEGER NOT NULL,
+    [conv_id] NVARCHAR(150) NOT NULL,
     [conv_name] NVARCHAR(140),
     [participants] TEXT,
     CONSTRAINT [PK_conv] PRIMARY KEY ([conv_id])
@@ -11,7 +11,7 @@ DROP TABLE IF EXISTS [Messages];
 CREATE TABLE [Messages]
 (
     [msg_id] INTEGER,
-    [msg_conv_id] INTEGER NOT NULL,
+    [msg_conv_id] NVARCHAR(150) NOT NULL,
     [msg_content] TEXT,
     [msg_author_id] INTEGER,
     [msg_timestamp] DATETIME,
