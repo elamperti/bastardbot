@@ -1,32 +1,30 @@
-from hangups import auth
-from hangups import client
-import hangups
+from time import sleep
+
 from tornado import ioloop
 
-from time import sleep
 from database import BastardSQL
+import hangups
 
 class BastardBot():
     def __init__(self, database):
         self.__db = database
         # auth cookie
         try:
-            cookies = auth.get_auth_stdin('cookies')
+            cookies = hangups.auth.get_auth_stdin('cookies')
         except auth.GoogleAuthError as e:
             print('Login failed ({})'.format(e))
             sys.exit(-1)
 
         # init client
-        self.__client = client.Client(cookies)
+        self.__client = hangups.client.Client(cookies)
 
         # hooks
         self.__client.on_connect.add_observer(self.__on_connect)
         self.__client.on_disconnect.add_observer(self.__on_disconnect)
-        self.__client.on_message.add_observer(self.__on_message)
 
         # generic hook for debugging
-        self.__client.on_typing.add_observer(self.__on_generic_event)
-        self.__client.on_conversation.add_observer(self.__on_generic_event)
+        #self.__client.on_typing.add_observer(self.__on_generic_event)
+        #self.__client.on_conversation.add_observer(self.__on_generic_event)
 
     def sync(self):
         try:
@@ -57,21 +55,31 @@ class BastardBot():
             )
             self.__db.commit()
 
-
-    def __on_connect(self):
+    def __on_connect(self, initial_data):
         """Handle connecting for the first time."""
         print ("Connected!")
-        self.__id = self.__client.self_user_id.gaia_id
-        self.__conversations = hangups.ConversationList(self.__client);
-        self.__users = hangups.UserList(self.__client)
+        
+        # FIXME: temporaly workaround to grab self id
+        self.__id = initial_data.self_entity.id_.gaia_id
+
+        self.__users = hangups.UserList(
+            initial_data.self_entity, 
+            initial_data.entities,
+            initial_data.conversation_participants
+        )
+        self.__conversations = hangups.ConversationList(
+            self.__client,
+            initial_data.conversation_states,
+            self.__users
+        )
+        self.__conversations.on_message.add_observer(self.__on_message)
 
         print("Loading initial conversations")
         for conversation in self.__conversations.get_all():
             self.__add_conversation(conversation)
             for message in conversation.chat_messages:
                 self.__add_message(message)
-            
-
+        print("Conversations loaded!")   
         #print("Debug!")
         #r = self.__client.searchentities("christian", 5)
         #r.add_done_callback(self.__on_results)
