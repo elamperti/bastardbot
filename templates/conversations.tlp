@@ -1,0 +1,16 @@
+{% extends "layout.tlp" %}
+{% set title='Conversations' %}
+{% set breadcrumb=[('/', "BastardBot"), ('conversations', "Conversations")] %}
+{% set header_title='List of conversations' %}
+
+{% block mainContent %}
+    <ul class="list-group">
+    {% for conversation in conversations %}
+        <li class="list-group-item">
+            <strong>{{ conversation.conv_id }}</strong> &mdash; {{ conversation.conv_name }}<br>
+            <small>{{ conversation.participants }}</small>
+        </li>
+    {% endfor %}
+    </ul>
+{% endblock %}
+

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{{ title if title is defined else 'Untitled' }} - BastardBot</title>
+
+        <!--<link rel="icon" type="image/png" href="/favicon.ico">-->
+        <!-- Bootstrap -->
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+
+        <style media="screen" type="text/css">
+            body {padding-bottom: 64px;}
+            footer {
+                background: rgba(0,0,0,0.15);
+                border: 0 !important;
+                padding-top: 1em;
+            }
+            select.form-control {max-width: 24em;}
+        </style>
+    </head>
+
+    <body>
+        <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">BastardBot</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    {# if session.isLoggedIn() -#}
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Stuff <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/conversations">Conversations</a></li>
+                                <li><a href="/links">Links</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    {# endif #}
+                    
+                    <ul class="nav navbar-nav navbar-right">
+                    {# if session.isLoggedIn() -#}
+                        <!--<li class="navbar-text"><span class="glyphicon glyphicon-user"></span> {# session.get('name') #}</li>
+                        <li><a href="/session/logout"><span class="glyphicon glyphicon-off"></span> Log out</a></li>-->
+                    {# else #}
+                        <!--<li><a href="/session/login"><span class="glyphicon glyphicon-log-in"></span> Log in</a></li>-->
+                    {# endif #}
+                    </ul>
+                </div><!-- /.navbar-collapse -->
+            </div><!-- /.container-fluid -->
+        </nav>
+
+        <div class="container" role="main">
+            <div id="alerts">
+            {# for alert in session.alerts -#}
+                <!--<div class="alert alert-{# alert.type #}">
+                    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    {# alert.message #}
+                </div>-->
+            {# endfor -#}
+            </div>
+            
+            {% if breadcrumb is defined -%}
+            <ol class="breadcrumb">
+            {% for link, name in breadcrumb -%}
+                {% if link == "#" -%}
+                <li class="active"><a href="{{ link }}">{{ name }}</a></li>
+                {% elif link == "" %}
+                <li>{{ name }}</li>
+                {% else %}
+                <li><a href="{{ link }}">{{ name }}</a></li>
+                {% endif %}
+            {% endfor -%}
+            </ol>
+            {% endif -%}
+            
+            {% if header_title is defined -%}
+            <div class="page-header">
+                <h1>{{ header_title }}</h1>
+            </div>
+            {% endif -%}
+            {% block mainContent %}
+            <div class="well">
+                <p>[No content defined]</p>
+            </div>
+            {% endblock %}
+        </div>
+
+
+        <footer class="navbar navbar-fixed-bottom">
+            <div class="container text-center">
+                <small>BastardBot [¬º-°]¬</small>
+            </div>
+        </footer>
+
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    </body>
+</html>

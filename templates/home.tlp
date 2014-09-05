@@ -1,0 +1,13 @@
+{% extends "layout.tlp" %}
+{% set title='Home' %}
+{% set breadcrumb=[('#', "BastardBot")] %}
+{% set header_title='Home' %}
+
+{% block mainContent %}
+            <div class="jumbotron">
+                <h1>Nothing.</h1>
+                <p>Would you like me to go and stick my head in a bucket of water? I’ve got one ready. Wait a minute.</p>
+                <div class="pull-right">&mdash; Marvin (The Hitchhiker's Guide to the Galaxy)</div>
+            </div>
+{% endblock %}
+
