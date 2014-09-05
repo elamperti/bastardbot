@@ -4,6 +4,7 @@ import sqlite3
 class BastardSQL():
     def __init__(self):
         self.conn = sqlite3.connect('bastard.db')
+        self.conn.row_factory = sqlite3.Row
         self.cursor = self.conn.cursor()
 
     def _populate(self):
@@ -60,6 +61,12 @@ class BastardSQL():
         """Returns all the tags for a given message"""
         result = self.cursor.execute("SELECT [msg_tags] FROM [Messages] WHERE msg_id = {}".format(msg_id))
         return result.fetchone()[0]
+
+    def dict_factory(self, row):
+        d = {}
+        for idx, col in enumerate(self.cursor.description):
+            d[col[0]] = row[idx]
+        return d
 
 if __name__ == '__main__':
     print("Populating database...")
