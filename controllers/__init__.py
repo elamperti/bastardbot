@@ -1,2 +1,2 @@
-from controllers import defaultcontroller as DefaultController
-from controllers import basecontroller as BaseController
+import controllers.apicontroller
+import controllers.bastardcontroller

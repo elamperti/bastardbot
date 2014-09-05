@@ -2,14 +2,8 @@ import os
 
 import cherrypy
 
-from controllers import defaultcontroller
-
-class BastardBot(object):
-    def __init__(self):
-        pass
-
-    def index(self):
-        return "Hi."
+import database
+from controllers import *
 
 cherrypy.config.update({
     'server.socket_host': '0.0.0.0',  # Make it visible from everywhere
@@ -31,12 +25,11 @@ class BastardBot(object):
         }
 
         # Dispatch magic
-        cherrypy.tree.mount(defaultcontroller.DefaultController(), "", conf)  # , conf_for_this
+        cherrypy.tree.mount(bastardcontroller.BastardController(), "", conf)
+        cherrypy.tree.mount(apicontroller.APIController(), "/api/bastardbot/", conf)
 
+        cherrypy.engine.subscribe('start_thread', self.connectDB)
         self.start()
-
-    def index(self):
-        return "Wrong way"
 
     def start(self):
         cherrypy.engine.start()
@@ -45,6 +38,8 @@ class BastardBot(object):
         cherrypy.engine.stop()
         cherrypy.engine.exit()
 
+    def connectDB(self, thread_index):
+        cherrypy.thread_data.db = database.BastardSQL()
 
 if __name__ == '__main__':
     B = BastardBot()
