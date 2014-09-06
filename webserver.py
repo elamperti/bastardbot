@@ -29,10 +29,12 @@ class BastardBot(object):
         cherrypy.tree.mount(apicontroller.APIController(), "/api/bastardbot/", conf)
 
         cherrypy.engine.subscribe('start_thread', self.connectDB)
+        cherrypy.engine.signals.subscribe()
         self.start()
 
     def start(self):
         cherrypy.engine.start()
+        cherrypy.engine.block()
 
     def stop(self):
         cherrypy.engine.stop()
