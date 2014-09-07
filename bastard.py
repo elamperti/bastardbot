@@ -1,3 +1,8 @@
+import os
+import sys
+# FIXME: workaround for hangups path
+sys.path.insert(0, os.getcwd() + '/hangups')
+
 from time import sleep
 
 from tornado import ioloop
