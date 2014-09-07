@@ -2,6 +2,7 @@ import os
 
 import cherrypy
 
+import bot
 import database
 from controllers import *
 
@@ -27,6 +28,9 @@ class BastardBot(object):
         # Dispatch magic
         cherrypy.tree.mount(bastardcontroller.BastardController(), "", conf)
         cherrypy.tree.mount(apicontroller.APIController(), "/api/bastardbot/", conf)
+
+        # Hooking into cherrypy engine...
+        bot.BotPlugin(cherrypy.engine).subscribe()
 
         cherrypy.engine.subscribe('start_thread', self.connectDB)
         cherrypy.engine.signals.subscribe()
