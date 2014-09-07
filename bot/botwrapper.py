@@ -54,11 +54,14 @@ class BotWrapper(Thread):
     ########################################
     def say_hello(self, name):
         self.output('Hello, {}! I am BotWrapper'.format(name))
-        cv = self.__conversations.get('UgxOPxGe8RTfgX8PZi94AaABAQ')
-        cv.send_message('Testing hello....')
 
     def send_message(self, conversation, message):
-        self.output('To {}: {}'.format(conversation, message))
+        try:
+            cv = self.__conversations.get('UgxOPxGe8RTfgX8PZi94AaABAQ')
+            cv.send_message('Testing hello....')
+            self.output('To {}: {}'.format(conversation, message))
+        except:
+            self.output('ERROR SENDING MESSAGE')
 
 
     ########################################
