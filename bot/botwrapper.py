@@ -57,8 +57,8 @@ class BotWrapper(Thread):
 
     def send_message(self, conversation, message):
         try:
-            cv = self.__conversations.get('UgxOPxGe8RTfgX8PZi94AaABAQ')
-            cv.send_message('Testing hello....')
+            cv = self.__conversations.get(conversation)
+            cv.send_message(message)
             self.output('To {}: {}'.format(conversation, message))
         except:
             self.output('ERROR SENDING MESSAGE')
