@@ -25,3 +25,9 @@ class APIController(BaseController):
     def conversation(self, conv_id):
         if conv_id is not Null:
             return "Hello :)"
+    
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def talk(self, conv_id, message):
+        cherrypy.engine.publish('bot-sendmsg', conv_id, message)
+        return [conv_id, message]
