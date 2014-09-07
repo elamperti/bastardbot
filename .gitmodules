@@ -1,3 +1,0 @@
-[submodule "hangups"]
-	path = hangups
-	url = git@github.com:elamperti/hangups.git
