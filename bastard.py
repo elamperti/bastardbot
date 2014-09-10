@@ -3,8 +3,6 @@ import sys
 # FIXME: workaround for hangups path
 sys.path.insert(0, os.getcwd() + '/hangups')
 
-from time import sleep
-
 from tornado import ioloop
 
 from database import BastardSQL
@@ -13,6 +11,10 @@ import hangups
 class BastardBot():
     def __init__(self, database):
         self.__db = database
+        #self.__authors = []
+        #for author in self.__db.get_authors():
+        #    self.__authors.append(self.__db.dict_factory(author))
+
         # auth cookie
         try:
             cookies = hangups.auth.get_auth_stdin('cookies')
@@ -39,26 +41,27 @@ class BastardBot():
 
     def __add_conversation(self, conversation):
         """Adds a conversation (if not exists)"""
-        #FIXME Otimize the hell of this
-        if not self.__db.get_conversation((conversation.id_,)).fetchone():
+        # FIXME Optimize this
+        if not self.__db.get_conversation(conversation.id_):
             self.__db.put_conversation(
                 conversation.id_, 
                 conversation.name, 
                 ";-;".join([u.full_name for u in conversation.users])
             )
-            self.__db.commit()
 
     def __add_message(self, message):
         """Adds a message in a specific conversation"""
-        #FIXME Otimize the hell of this
-        if self.__db.get_conversation((message.conv_id,)).fetchone():
+        # FIXME Optimize this
+        if self.__db.get_conversation(message.conv_id):
             self.__db.put_message(
                 message.conv_id, 
                 message.text, 
                 message.user_id.gaia_id, 
                 message.timestamp
             )
-            self.__db.commit()
+
+    def __add_author(self, gaia_id, name):
+        pass
 
     def __on_connect(self, initial_data):
         """Handle connecting for the first time."""
@@ -141,10 +144,6 @@ if __name__ == '__main__':
     print("Initializing the BastardBot client...")
     bot = BastardBot(botdb)
     try:
-        print("Main loop started")
-        while(True):
-            bot.sync()
-            sleep(2)
-            print("Looped")
+        bot.sync()
     except KeyboardInterrupt:
         print("Keyboard interrupt!")
