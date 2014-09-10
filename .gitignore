@@ -1,5 +1,5 @@
 *.py[cod]
 cookies*
 sessions/*
-bastard.db
+*.db
 .python-version
