@@ -1,6 +1,5 @@
 import sqlite3
 
-
 class BastardSQL():
     def __init__(self, filename='bastard.db'):
         self.messages_per_page = 20
@@ -81,30 +80,69 @@ class BastardSQL():
     def get_author(self, author_gaia_id):
         """Returns a single author"""
         query = "SELECT * FROM [Authors] WHERE [author_id] = ?"
-        result = self.cursor.execute(query, author_gaia_id)
+        result = self.cursor.execute(query, (author_gaia_id,))
         return result.fetchone()
 
     def put_author(self, author_gaia_id, author_name):
         """Adds an author to the Authors table"""
+        # FIXME: check if it exists before inserting it blindly.
         query = "INSERT INTO [Authors] ([author_id], [author_name]) VALUES (?, ?)"
         self.cursor.execute(query, (author_gaia_id, author_name))
         self.changed = True 
-        return self.cursor.lastrowid # FIXME will this work if we don't commit right now?
+        return self.cursor.lastrowid
 
     def add_tags(self, msg_id, author, tags):
         """Adds tags to a message"""
-        pass
+        added_tags_count = 0
+        for tag in tags:
+            tag_id = self._get_tag_id(tag)
+            print ("TAG_ID {}".format(tag_id))
+            if tag_id is None:
+                self.cursor.execute("INSERT INTO [Tags] (tag_name) VALUES (?)", (tag,))
+                tag_id = self.cursor.lastrowid
+                added_tags_count += 1
+                self.changed = True
+
+            query = "INSERT INTO [Messages_have_Tags] (msg_id, tag_id, author_id) VALUES (?, ?, ?)"
+            self.cursor.execute(query, (msg_id, tag_id, author))
+
+        return added_tags_count
 
     def get_tags(self, msg_id, author=0):
         """Returns all the tags for a given message"""
-        result = self.cursor.execute("SELECT [msg_tags] FROM [Messages] WHERE msg_id = {}".format(msg_id))
-        return result.fetchone()[0]
+        # FIXME: this is far from being pythonic.
+        # FIXME: return author(id|name) column too
+        query = "SELECT DISTINCT [tag_id], [tag_name] FROM [Tags] WHERE tag_id IN (SELECT [tag_id] FROM [Messages_have_Tags] WHERE msg_id=?);"
+        if author == 0:
+            result = self.cursor.execute(query, (msg_id,))
+        else:
+            query = query[:-2] + " AND author_id=?);"
+            result = self.cursor.execute(query, (msg_id, author_id))
+        return result
+
+    def _get_tag_id(self, tag_name):
+        """Returns the id of a tag, given its name"""
+        query = "SELECT [tag_id] FROM [Tags] WHERE tag_name = ? LIMIT 1;"
+        result = self.cursor.execute(query, (tag_name,))
+        tag_id = result.fetchone()
+        return tag_id
+
+    def _get_tag_name(self, tag_id):
+        """Returns the name of a tag, given its id"""
+        query = "SELECT [tag_name] FROM [Tags] WHERE tag_id = ? LIMIT 1;"
+        result = self.cursor.execute(query, (tag_id,))
+        try:
+            tag_name = result.fetchone()
+        except:
+            tag_name = 0
+        return tag_name
 
     def dict_factory(self, row):
         d = {}
         for idx, col in enumerate(self.cursor.description):
             d[col[0]] = row[idx]
         return d
+
 
 if __name__ == '__main__':
     print("Populating database...")
