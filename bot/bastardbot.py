@@ -8,6 +8,7 @@ from tornado import ioloop
 import hangups
 
 from .hangupsadapters import ChatMessage
+from .filters import MessageFilters, PlainFilter, EchoCommand
 
 class BastardBot(object):
     def __init__(self):
@@ -16,6 +17,10 @@ class BastardBot(object):
         self.__database = None
         self.__users = None
         self.__conversations = None
+        # NOTE: initial aproach
+        self.__messagefilters = MessageFilters()
+        self.__messagefilters.add_filter(EchoCommand())
+        
 
     ########################################
     # LAUNCH RELATED 
@@ -50,6 +55,8 @@ class BastardBot(object):
     ########################################
     def set_database(self, database):
         self.__database = database
+        # FIXME this...here...horrible..but.
+        self.__messagefilters.add_filter(PlainFilter(database))
 
 
     ########################################
@@ -76,8 +83,14 @@ class BastardBot(object):
 
     def __parse_message(self, chatmessage):
         self.__log.debug("%s - %s", chatmessage.conv_id(), chatmessage.text())
-        self.__save_message(chatmessage)
+        self.__messagefilters.parse_message(chatmessage)
+        #self.__save_message(chatmessage) # FIXME save disabled for now
 
+
+
+    ########################################
+    # PRIVATE DB RELATED METHODS
+    ########################################
     def __save_message(self, chatmessage):
         # FIXME operations are too tied
         # FIXME try catch
@@ -108,13 +121,6 @@ class BastardBot(object):
         self.__database._commit() # FIXME John
         self.__log.debug("Author added: %s", author.gaia_id)
 
-    #FIXME: disabling this for now
-        #print("Loading initial conversations")
-        #for conversation in self.__conversations.get_all():
-        #    self.__add_conversation(conversation)
-        #    for message in conversation.chat_messages:
-        #        self.__add_message(message)
-        #print("Conversations loaded!") 
 
 
     ########################################
@@ -138,7 +144,7 @@ class BastardBot(object):
             initial_data.conversation_states,
             self.__users
         )
-        self.__sync_conversations()
+        #self.__sync_conversations() # FIXME disabled this for debugging
 
         self.__conversations.on_message.add_observer(self.__on_message)
 
