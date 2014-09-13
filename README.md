@@ -1,14 +1,23 @@
-BastardBot
-==========
+![BastardBot](https://raw.githubusercontent.com/wiki/elamperti/bastardbot/images/bastard_banner720.png)
+
+## Welcome to the bastardbot project
 
 This bot connects to Google Hangouts conversations using
 [hangups](https://github.com/tdryer/hangups/), by Tom Dryer.
-
 It will let you use/interact with the conversations *soon*.
+We are working on it as much as we can.
+
+For more information read [the wiki](wiki)!
+
+### Objectives
+
+  * **Follow an ongoing conversation**, acting upon its messages according to its *filters*.
+  * **Give information** back to conversations when an *event* is triggered or by request of the users (via *slash commands* or a *web API*).
+  * We would like this to eventually evolve into a **logging tool** for chats.
 
 
-Trying it out
--------------
+Installation
+------------
 
 The bot is not ready yet!
 
