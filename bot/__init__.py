@@ -1,1 +1,1 @@
-from .botplugin import BotPlugin
+from .bastardbot import BastardBot
