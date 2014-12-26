@@ -1,7 +1,7 @@
 import logging
 
-from database import BastardSQL
-from bot import BastardBot
+#from database import BastardSQL
+from bot import BotMain
 
 if __name__ == '__main__':
     logging.basicConfig(
@@ -10,18 +10,18 @@ if __name__ == '__main__':
         datefmt='%Y-%m-%d %H:%M:%S'
     )
     # Only enable debug level for bbot
-    logger = logging.getLogger('BastardBot')
+    logger = logging.getLogger('bastardbot')
     logger.setLevel(logging.DEBUG)
     # Database instance
-    print("Initializing BastardSQL...")
-    bastardsql = BastardSQL()
-    bastardsql._populate()
+    #print("Initializing BastardSQL...")
+    #bastardsql = BastardSQL()
+    #bastardsql._populate()
   
     print("Initializing the BastardBot...")
-    bastardbot = BastardBot()
+    bastardbot = BotMain()
 
-    print("BastardBot uses BastardSQL")
-    bastardbot.set_database(bastardsql)
+    #print("BastardBot uses BastardSQL")
+    #bastardbot.set_database(bastardsql)
 
     try:
         bastardbot.start()
