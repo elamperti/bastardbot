@@ -12,6 +12,7 @@ import asyncio
 import hangups
 from hangups.ui.utils import get_conv_name
 
+from .botbrain import BotBrain
 
 class BotMain(object):
     def __init__(self, cookies_path = 'bot/cookies', max_retries = 1):
@@ -19,9 +20,11 @@ class BotMain(object):
         self.__cookies_path = cookies_path
         self.__max_retries = max_retries
         self.__client = None
+        self.__id = None
         self.__user_list = None
         self.__conversation_list = None
         self.__log = logging.getLogger('bastardbot')
+        self.__brain = BotBrain()
         # asyncio handlers
         loop = asyncio.get_event_loop()
         loop.add_signal_handler(signal.SIGINT, lambda: self.stop())
@@ -40,10 +43,16 @@ class BotMain(object):
             self.__log.critical('Google authentication error %s', e)
         return cookies
 
+    def __send_message(self, conversation_id, text):
+        conversation = self.__conversation_list.get(conversation_id)
+        asyncio.async(conversation.send_message([hangups.ChatMessageSegment(text)]))
+
     def __on_connect(self, initial_data):
         """ Handle connection """
         self.__log.debug("Bot connected")
         
+        self.__id = initial_data.self_entity.id_.gaia_id
+
         self.__user_list = hangups.UserList(self.__client, 
                                             initial_data.self_entity,
                                             initial_data.entities,
@@ -55,11 +64,20 @@ class BotMain(object):
                                                             initial_data.sync_timestamp)
         
         self.__conversation_list.on_event.add_observer(self.__on_conversation_event)
-
-        self.__log.debug('Initial conversations:')
-        for c in self.__conversation_list.get_all():
+                
+        # create known conversation
+        self.__log.debug('Loading initial conversations:')
+        for conversation in self.__conversation_list.get_all():
+            self.__brain.register_conversation(get_conv_name(conversation, truncate=True), conversation.id_)
             self.__log.debug('  {} ({})'
-                             .format(get_conv_name(c, truncate=True), c.id_))
+                             .format(get_conv_name(conversation, truncate=True), conversation.id_))
+        # create known users
+        self.__log.debug('Loading initial users:')
+        for user in self.__user_list.get_all():
+            self.__brain.register_user(full_name=user.full_name, 
+                                       gaia_id=user.id_.gaia_id)
+            self.__log.debug('* {}'
+                             .format(user.full_name))
 
     def __on_disconnect(self):
         """ Handle disconnect """
@@ -69,10 +87,16 @@ class BotMain(object):
     def __on_conversation_event(self, event):
         """ Handle conversation events """
         if isinstance(event, hangups.ChatMessageEvent):
-            self.__log.debug("MESSAGE: [{}/{}]: {}"
-                             .format(self.__user_list.get_user(user_id=event.user_id).full_name, 
-                                     event.conversation_id, 
-                                     event.text))
+            if event.user_id.gaia_id != self.__id:
+                self.__brain.parse_message(event.conversation_id,
+                                           event.user_id.gaia_id,
+                                           event.text,
+                                           event.timestamp,
+                                           lambda conv_id, text: self.__send_message(conv_id, text))
+                self.__log.debug("MESSAGE: [{}/{}]: {}"
+                                 .format(self.__user_list.get_user(user_id=event.user_id).full_name, 
+                                         event.conversation_id, 
+                                         event.text))
         else:
             self.__log.debug(event)
 
@@ -106,6 +130,4 @@ class BotMain(object):
     def stop(self):
         """ Stop the loop/bot """
         self.__log.debug("Stopping the bot")
-        asyncio.async(
-            self.__client.disconnect()
-        ).add_done_callback(lambda future: future.result())
+        asyncio.async(self.__client.disconnect()).add_done_callback(lambda future: future.result())
