@@ -46,9 +46,3 @@ class BotBrain(object):
                 callback(conversation_id, "your alias is %s" % user.alias)    
         except:
             callback(conversation_id, "user not registered")
-
-    def test(self):
-        for u in User.select():
-            print(u.display_name)
-        for u in Conversation.select():
-            print(u.conv_id)
