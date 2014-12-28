@@ -8,7 +8,7 @@ class BotBrain(object):
         botdb.connect()
         botdb.drop_tables([User, Conversation], safe=True) # change to true after debug
         botdb.create_tables([User, Conversation])
-        self.__commands = ['echo', 'test']
+        self.__commands = ['echo', 'test', 'alias']
 
     def register_user(self, full_name, gaia_id, alias=None):
         if not alias:
@@ -24,13 +24,28 @@ class BotBrain(object):
         if message.startswith("/"):
             command = message.split(" ", 1)[0].strip("/")
             if command in self.__commands:
-                getattr(self, "handle_cmd_%s" % command)(conversation_id, message, callback)
+                getattr(self, "handle_cmd_%s" % command)(conversation_id, author, 
+                                                         message, timestamp, callback)
 
-    def handle_cmd_echo(self, conversation_id, message, callback):
+    def handle_cmd_echo(self, conversation_id, author, message, timestamp, callback):
         callback(conversation_id, message.replace('/echo ', ''))
 
-    def handle_cmd_test(self, conversation_id, message, callback):
+    def handle_cmd_test(self, conversation_id, author, message, timestamp, callback):
         callback(conversation_id, "test is ok")
+
+    def handle_cmd_alias(self, conversation_id, author, message, timestamp, callback):
+        try:
+            user = User.get(User.gaia_id == author)
+            cmdargs = message.split(" ")[1::]
+            if len(cmdargs) == 1 and cmdargs[0]:
+                cmdargs = cmdargs.pop()
+                user.alias = cmdargs
+                user.save()
+                callback(conversation_id, "alias set to %s" % cmdargs)
+            else:
+                callback(conversation_id, "your alias is %s" % user.alias)    
+        except:
+            callback(conversation_id, "user not registered")
 
     def test(self):
         for u in User.select():
