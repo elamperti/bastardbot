@@ -3,3 +3,4 @@ cookies*
 sessions/*
 *.db
 .python-version
+/bot/*.sqlite
