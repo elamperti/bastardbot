@@ -27,6 +27,12 @@ Here's a [good tutorial about pyenv](http://davebehnke.com/python-pyenv-ubuntu.h
 
 ---
 
+Before starting you must get the *hangups* submodule.
+```
+git submodule init
+git submodule update
+```
+
 Install the required packages with pip: 
 `pip install -r requirements.txt`
 
