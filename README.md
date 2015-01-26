@@ -27,6 +27,9 @@ Here's a [good tutorial about pyenv](http://davebehnke.com/python-pyenv-ubuntu.h
 
 ---
 
+Install the required packages with pip: 
+`pip install -r requirements.txt`
+
 The first time you start BastardBot, you will be prompted to log into your Google
 account by the hangups library. It only sends your credentials to Google, and it 
 stores session cookies locally.
