@@ -1,6 +1,5 @@
 *.py[cod]
 cookies*
 sessions/*
-*.db
+*.sqlite
 .python-version
-/bot/*.sqlite
