@@ -2,7 +2,7 @@
 # coding=utf-8
 from peewee import *
 
-botdb = SqliteDatabase('bastard.sqlite', threadlocals=True)
+botdb = SqliteDatabase('bastard.sqlite', threadlocals=True, check_same_thread=False)
 
 class BaseModel(Model):
     class Meta:
