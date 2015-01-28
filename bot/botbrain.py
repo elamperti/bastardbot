@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # coding=utf
-import peewee
+
 from models import *
 
 class BotBrain(object):
     def __init__(self):
         botdb.connect()
         botdb.drop_tables([User, Conversation], safe=True) # change to true after debug
-        botdb.create_tables([User, Conversation])
+        botdb.create_tables([User, Conversation, Message])
         self.__commands = ['echo', 'test', 'alias']
 
     def register_user(self, full_name, gaia_id, alias=None):
@@ -19,8 +19,16 @@ class BotBrain(object):
         Conversation.create(name=conv_name, conv_id=conv_id)
 
     def parse_message(self, conversation_id, author, message, timestamp, callback):
-        print("[{}]{}: {} [{}]"
-              .format(conversation_id, author, message, timestamp))
+        #print("[{}]{}: {} [{}]"
+        #      .format(conversation_id, author, message, timestamp))
+
+        ########### DEBUG -z
+        db_conv = Conversation.get(Conversation.conv_id == conversation_id)
+        db_author = User.get(User.gaia_id == author)
+
+        Message.create(content=message, conversation=db_conv, author=db_author, message_type=1, date_created=timestamp)
+        ########### /DEBUG -z
+
         if message.startswith("/"):
             command = message.split(" ", 1)[0].strip("/")
             if command in self.__commands:
