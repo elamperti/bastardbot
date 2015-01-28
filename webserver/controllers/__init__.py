@@ -1,2 +1,2 @@
-import controllers.apicontroller
-import controllers.bastardcontroller
+from webserver.controllers import apicontroller
+from webserver.controllers import bastardcontroller

@@ -1,6 +1,7 @@
 import cherrypy
 
-from controllers.basecontroller import BaseController
+from webserver.controllers.basecontroller import BaseController
+from models import Conversation
 
 
 class APIController(BaseController):
@@ -14,7 +15,8 @@ class APIController(BaseController):
     @cherrypy.expose
     @cherrypy.tools.json_out()
     def list(self, *args, **kwargs):        
-        res = cherrypy.thread_data.db.get_conversations()
+        #res = cherrypy.thread_data.db.get_conversations()
+        print (Conversation.select())
         conversations = []
         for item in res:
             conversations.append(cherrypy.thread_data.db.dict_factory(item))

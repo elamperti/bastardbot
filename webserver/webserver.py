@@ -2,9 +2,9 @@ import os
 
 import cherrypy
 
-#import bot # this was for the bot
-import database
-from controllers import *
+from models import *
+from webserver.controllers import *
+from webserver import session
 
 cherrypy.config.update({
     'server.socket_host': '0.0.0.0',  # Make it visible from everywhere
@@ -19,9 +19,10 @@ class BastardBot(object):
     def __init__(self):
         conf = {
             '/': {
-                'tools.sessions.on': True,
-                'tools.sessions.storage_type': "file",
-                'tools.sessions.storage_path': "sessions"
+                # 'tools.sessionHandler.on': True,
+                # 'tools.sessions.on': True,
+                # 'tools.sessions.storage_type': "file",
+                # 'tools.sessions.storage_path': "webserver/sessions"
             }
         }
 
@@ -33,6 +34,7 @@ class BastardBot(object):
         #bot.BotPlugin(cherrypy.engine).subscribe()
 
         cherrypy.engine.subscribe('start_thread', self.connectDB)
+        # cherrypy.tools.sessionHandler = cherrypy._cptools.HandlerTool(sessionHandler)
         cherrypy.engine.signals.subscribe()
         self.start()
 
@@ -45,8 +47,9 @@ class BastardBot(object):
         cherrypy.engine.exit()
 
     def connectDB(self, thread_index):
-        cherrypy.thread_data.db = database.BastardSQL()
+        cherrypy.thread_data.db = botdb
+        cherrypy.thread_data.db.connect()
 
-if __name__ == '__main__':
-    B = BastardBot()
-    
+# def sessionHandler():
+#     '''Sadly, this can't be in Session because it requires cherrypy to be initialized.'''
+#     cherrypy.request.session = session.Session(cherrypy.session)

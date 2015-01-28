@@ -12,7 +12,7 @@ def template(filename=None):  # , *args, **kwargs
         def wrapped_f(*args, **kwargs):
             params = f(*args, **kwargs)
             jinja = Environment(
-                loader=FileSystemLoader('templates'),
+                loader=FileSystemLoader('webserver/templates'),
                 extensions=['jinja2.ext.with_']
             )
 
