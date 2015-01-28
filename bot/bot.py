@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 # coding=utf-8
+
 import os
 import signal
 import sys
 import time
 import logging
-# FIXME: workaround for hangups path
-# Not needed anymore.
-#sys.path.insert(0, os.getcwd() + '/hangups') 
 import asyncio
+
 import hangups
 from hangups.ui.utils import get_conv_name
 
