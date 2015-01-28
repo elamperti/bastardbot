@@ -7,8 +7,9 @@
     <ul class="list-group">
     {% for conversation in conversations %}
         <li class="list-group-item">
-            <strong>{{ conversation.conv_id }}</strong> &mdash; {{ conversation.conv_name }}<br>
-            <small>{{ conversation.participants }}</small>
+            <strong>{{ conversation.name }}</strong> &mdash; <span class="text-muted">{{ conversation.conv_id }}</span>
+            <a href="/log/{{ conversation.conv_id }}">log</a>
+            {#<br><small>{{ conversation.participants }}</small>#}
         </li>
     {% endfor %}
     </ul>

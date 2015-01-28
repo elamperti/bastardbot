@@ -1,0 +1,16 @@
+{% extends "layout.tlp" %}
+{% set title='Users' %}
+{% set breadcrumb=[('/', "BastardBot"), ('users', "Users")] %}
+{% set header_title='List of users' %}
+
+{% block mainContent %}
+    <ul class="list-group">
+    {% for user in users %}
+        <li class="list-group-item">
+            <strong>{{ user.display_name }}</strong> <span class="text-muted">({{ user.alias }})</span><br>
+            <small>{{ user.gaia_id }}</small>
+        </li>
+    {% endfor %}
+    </ul>
+{% endblock %}
+

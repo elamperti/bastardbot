@@ -1,0 +1,20 @@
+{% extends "layout.tlp" %}
+{% set title='Log: ' + conversation.name %}
+{% set breadcrumb=[('/', "BastardBot"), ('conversation', "Logs"), (conversation.conv_id, conversation.name)] %}
+{% set header_title=conversation.name %}
+
+{% block mainContent %}
+	{% if no_messages == 1 or messages.count() == 0 %}
+		<div class="alert alert-warning">No messages in this conversation.</div>
+	{% else %}
+	    <ul class="list-group">
+	    {% for message in messages %}
+	        <li class="list-group-item">
+	        	<small class="text-muted">{{ message.date_created }}</small><br>
+	            <strong>{{ message.author.display_name }}</strong>: {{ message.content }} {# FIXME: make it raw! #}
+	        </li>
+	    {% endfor %}
+	    </ul>
+	{% endif %}
+{% endblock %}
+

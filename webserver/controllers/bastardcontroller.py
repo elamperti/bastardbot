@@ -1,8 +1,9 @@
 import cherrypy
 
-from controllers.basecontroller import BaseController
-from template import template
+from webserver.controllers.basecontroller import BaseController
+from webserver.template import template
 
+from models import Conversation, User, Message
 
 class BastardController(BaseController):
     @cherrypy.expose
@@ -23,12 +24,35 @@ class BastardController(BaseController):
         return {'links': links}
 
     @cherrypy.expose
+    @template("log")
+    def log(self, conv_id=0):
+        if conv_id is 0:
+            self.redirect('/conversations')
+        else:
+            try:
+                conversation = Conversation.get(Conversation.conv_id == conv_id)
+            except:
+                # cherrypy.request.session.alerts.warn("Conversation ID not found")
+                self.redirect('/conversations')
+
+            # Now we know there is a conversation with that ID, check for messages
+            try:
+                messages = Message.select().where(Message.conversation == conversation)
+                print (messages)
+                return {'conversation': conversation, 'messages': messages}
+            except:
+                return {'conversation': conversation, 'no_messages': 1}
+
+    @cherrypy.expose
     @template("conversations")
-    def conversations(self):
-        res = cherrypy.thread_data.db.get_conversations()
-        conversations = []
-
-        for item in res:
-            conversations.append(cherrypy.thread_data.db.dict_factory(item))
-
+    def conversations(self, conv_id=0):
+        if conv_id is not 0:
+            self.redirect('/log/' + conv_id)
+        conversations = Conversation.select()
         return {'conversations': conversations}
+
+    @cherrypy.expose
+    @template("users")
+    def users(self):
+        users = User.select()
+        return {'users': users}
