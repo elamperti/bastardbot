@@ -4,7 +4,6 @@ import cherrypy
 
 from models import *
 from webserver.controllers import *
-from webserver import session
 
 cherrypy.config.update({
     'server.socket_host': '0.0.0.0',  # Make it visible from everywhere
