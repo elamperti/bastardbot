@@ -6,5 +6,5 @@ pip install -r requirements.txt
 git submodule init
 git submodule update
 rm bastard.sqlite
-screen -S botsession python bot.py
-screen -S webserver python webserver.py
+screen -S botsession -d -m python bot.py
+screen -S webserver -d -m python webserver.py
