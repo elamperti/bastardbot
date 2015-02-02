@@ -7,7 +7,7 @@ from webserver.controllers import *
 
 cherrypy.config.update({
     'server.socket_host': '0.0.0.0',  # Make it visible from everywhere
-    #'server.socket_port': 1234, 
+    'server.socket_port': 8080, 
     'log.screen': True,
     'engine.autoreload.on': True
 })
