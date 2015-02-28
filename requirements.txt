@@ -7,4 +7,6 @@ hangups-urwid==1.2.2-dev
 Jinja2==2.7.3
 peewee==2.4.5
 purplex==0.2.4
-requests==2.2.1
+requests==2.3.0
+hangups-robobrowser==0.5.2
+six==1.7.3
