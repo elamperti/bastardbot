@@ -4,6 +4,9 @@ from peewee import *
 
 botdb = SqliteDatabase('bastard.sqlite', threadlocals=True, check_same_thread=False)
 
+class ModelException:
+    IntegrityError = IntegrityError
+
 class BaseModel(Model):
     class Meta:
         database = botdb

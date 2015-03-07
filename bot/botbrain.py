@@ -6,17 +6,23 @@ from models import *
 class BotBrain(object):
     def __init__(self):
         botdb.connect()
-        botdb.drop_tables([User, Conversation, Message], safe=True)
-        botdb.create_tables([User, Conversation, Message])
+        #botdb.drop_tables([User, Conversation, Message], safe=True)
+        botdb.create_tables([User, Conversation, Message], safe=True)
         self.__commands = ['echo', 'test', 'alias', 'config']
 
     def register_user(self, full_name, gaia_id, alias=None):
         if not alias:
             alias = gaia_id
-        User.create(display_name=full_name, alias=alias, gaia_id=gaia_id)
+        try:
+            User.create(display_name=full_name, alias=alias, gaia_id=gaia_id)
+        except ModelException.IntegrityError:
+            pass
 
     def register_conversation(self, conv_name, conv_id):
-        Conversation.create(name=conv_name, conv_id=conv_id)
+        try:
+            Conversation.create(name=conv_name, conv_id=conv_id)
+        except ModelException.IntegrityError:
+            pass
 
     def parse_message(self, conversation_id, author, message, timestamp, callback):
         #print("[{}]{}: {} [{}]"
