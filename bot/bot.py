@@ -8,6 +8,8 @@ import time
 import logging
 import asyncio
 
+# FIXME: workaround for hangups path
+sys.path.insert(0, os.getcwd() + '/hangups')
 import hangups
 from hangups.ui.utils import get_conv_name
 

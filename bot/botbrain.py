@@ -6,7 +6,7 @@ from models import *
 class BotBrain(object):
     def __init__(self):
         botdb.connect()
-        botdb.drop_tables([User, Conversation], safe=True) # change to true after debug
+        botdb.drop_tables([User, Conversation, Message], safe=True) # change to true after debug
         botdb.create_tables([User, Conversation, Message])
         self.__commands = ['echo', 'test', 'alias']
 
