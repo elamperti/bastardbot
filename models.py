@@ -16,6 +16,7 @@ class User(BaseModel):
 class Conversation(BaseModel):
     name = CharField()
     conv_id = CharField(unique=True)
+    private = BooleanField(default=True)
 
 class MessageType(BaseModel):
     name = CharField(unique=True)

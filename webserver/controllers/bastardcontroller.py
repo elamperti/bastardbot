@@ -48,7 +48,7 @@ class BastardController(BaseController):
     def conversations(self, conv_id=0):
         if conv_id is not 0:
             self.redirect('/log/' + conv_id)
-        conversations = Conversation.select()
+        conversations = Conversation.select().where(Conversation.private == False)
         return {'conversations': conversations}
 
     @cherrypy.expose
