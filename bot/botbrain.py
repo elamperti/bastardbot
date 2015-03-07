@@ -65,12 +65,11 @@ class BotBrain(object):
     def handle_cmd_config(self, conversation_id, author, message, timestamp, callback):
         if message.find(" ") != -1:
             key, value = message.split(" ", 1)
-            if key == 'private':
-                value = value.lower == 'true'
+            if key == "private":
                 db_conv = Conversation.get(Conversation.conv_id == conversation_id)
-                db_conv.private = value
+                db_conv.private = (value.lower().strip() == "true")
                 db_conv.save()
-                if value:
+                if db_conv.private:
                     callback(conversation_id, "conversation set as private")
                 else:
                     callback(conversation_id, "conversation set as public")
