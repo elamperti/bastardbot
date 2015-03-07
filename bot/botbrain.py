@@ -6,9 +6,9 @@ from models import *
 class BotBrain(object):
     def __init__(self):
         botdb.connect()
-        botdb.drop_tables([User, Conversation, Message], safe=True) # change to true after debug
+        botdb.drop_tables([User, Conversation, Message], safe=True)
         botdb.create_tables([User, Conversation, Message])
-        self.__commands = ['echo', 'test', 'alias']
+        self.__commands = ['echo', 'test', 'alias', 'config']
 
     def register_user(self, full_name, gaia_id, alias=None):
         if not alias:
@@ -31,6 +31,7 @@ class BotBrain(object):
 
         if message.startswith("/"):
             command = message.split(" ", 1)[0].strip("/")
+            message = message.replace("/%s" % command, "").strip()
             if command in self.__commands:
                 getattr(self, "handle_cmd_%s" % command)(conversation_id, author, 
                                                          message, timestamp, callback)
@@ -54,3 +55,18 @@ class BotBrain(object):
                 callback(conversation_id, "your alias is %s" % user.alias)    
         except:
             callback(conversation_id, "user not registered")
+
+    def handle_cmd_config(self, conversation_id, author, message, timestamp, callback):
+        if message.find(" ") != -1:
+            key, value = message.split(" ", 1)
+            if key == 'private':
+                value = value.lower == 'true'
+                db_conv = Conversation.get(Conversation.conv_id == conversation_id)
+                db_conv.private = value
+                db_conv.save()
+                if value:
+                    callback(conversation_id, "conversation set as private")
+                else:
+                    callback(conversation_id, "conversation set as public")
+        else:
+            callback(conversation_id, "invalid config key")
