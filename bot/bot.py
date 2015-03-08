@@ -25,6 +25,7 @@ class BotMain(object):
         self.__user_list = None
         self.__conversation_list = None
         self.__log = logging.getLogger('bastardbot')
+        self.__loop_task = None
         self.__brain = BotBrain()
         # asyncio handlers
         loop = asyncio.get_event_loop()
@@ -117,8 +118,12 @@ class BotMain(object):
             loop = asyncio.get_event_loop()
             for retry in range(self.__max_retries):
                 try:
-                    loop.run_until_complete(self.__client.connect())
-                    sys.exit(0)
+                    self.__loop_task = asyncio.async(self.__db_polling_task(5))
+                    loop.run_until_complete(asyncio.wait([
+                        asyncio.async(self.__client.connect()),
+                        self.__loop_task]))
+                    loop.close()
+                    self.__log.debug("Loop closed")
                 except Exception as e:
                     self.__log.warning("Client unexpectedly disconnected:\n{}".format(e))
                     time.sleep(2)
@@ -131,4 +136,12 @@ class BotMain(object):
     def stop(self):
         """ Stop the loop/bot """
         self.__log.debug("Stopping the bot")
+        self.__loop_task.cancel()
         asyncio.async(self.__client.disconnect()).add_done_callback(lambda future: future.result())
+
+    @asyncio.coroutine
+    def __db_polling_task(self, delay):
+        for i in range(0, 10000):
+            print("Count to 10000 (%s)..." % i)
+            yield from asyncio.sleep(delay)
+        print("Task ended")        
