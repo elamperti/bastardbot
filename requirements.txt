@@ -10,3 +10,5 @@ purplex==0.2.4
 requests==2.3.0
 hangups-robobrowser==0.5.2
 six==1.7.3
+oauth2client
+git+https://github.com/jcgregorio/httplib2.git

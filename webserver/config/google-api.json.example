@@ -1,0 +1,8 @@
+{
+  "client_id": "YOUR_CLIENT_ID",
+  "client_secret": "YOUR_CLIENT_SECRET",
+  "scopes": [""],
+  "redirect_uri": "http://localhost:8080/login/oauth2callback",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://accounts.google.com/o/oauth2/token"
+}

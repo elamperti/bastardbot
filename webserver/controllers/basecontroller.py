@@ -1,9 +1,5 @@
-import datetime
-
+# -*- coding: utf-8 -*-
 import cherrypy
-
-# from views.gui import template
-
 
 class BaseController(object):
 

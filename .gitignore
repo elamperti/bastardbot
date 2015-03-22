@@ -3,3 +3,6 @@ cookies*
 sessions/*
 *.sqlite
 .python-version
+
+# Google Api config file
+google-api.json

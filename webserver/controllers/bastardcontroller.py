@@ -7,13 +7,18 @@ from models import Conversation, User, Message
 
 class BastardController(BaseController):
     @cherrypy.expose
-    def default(self,*args,**kwargs):
-      return '404 Not Found'
+    def default(self, *args, **kwargs):
+        return "404 Not Found"
 
     @cherrypy.expose
     @template("home")
     def index(self, *args, **kwargs):
         return {}
+
+    @cherrypy.expose
+    def logout(self):
+        cherrypy.lib.sessions.expire()
+        self.redirect('/')
 
     @cherrypy.expose
     @template("links")

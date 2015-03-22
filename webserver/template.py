@@ -34,7 +34,7 @@ def template(filename=None):  # , *args, **kwargs
                 raise cherrypy.HTTPError(404, "Template not found")
 
             t.globals['timestamp'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            #t.globals['session'] = cherrypy.request.session
+            t.globals['session'] = cherrypy.session
 
             return t.render(**params)
 

@@ -1,10 +1,12 @@
 #!/bin/bash
 export PYENV_VERSION="3.3.4"
 export PATH="$HOME/.pyenv/bin:$HOME/.pyenv/shims:$PATH"
+git checkout google-auth
+git reset --hard origin/google-auth
 git pull
 screen -ls | grep botsession && screen -x botsession -X stuff "^C"
 screen -ls | grep webserver && screen -x webserver -X stuff "^C"
-pip install -r requirements.txt
+pip install -r requirements.txt --upgrade
 git submodule init
 git submodule update
 rm bastard.sqlite

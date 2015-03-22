@@ -35,7 +35,7 @@
                 </div>
 
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    {# if session.isLoggedIn() -#}
+                    {% if session['logged'] %}
                     <ul class="nav navbar-nav">
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Stuff <b class="caret"></b></a>
@@ -46,15 +46,22 @@
                             </ul>
                         </li>
                     </ul>
-                    {# endif #}
+                    {% endif %}
                     
                     <ul class="nav navbar-nav navbar-right">
-                    {# if session.isLoggedIn() -#}
-                        <!--<li class="navbar-text"><span class="glyphicon glyphicon-user"></span> {# session.get('name') #}</li>
-                        <li><a href="/session/logout"><span class="glyphicon glyphicon-off"></span> Log out</a></li>-->
-                    {# else #}
-                        <!--<li><a href="/session/login"><span class="glyphicon glyphicon-log-in"></span> Log in</a></li>-->
-                    {# endif #}
+                    {% if session['logged'] %}
+                        <li class="navbar-text">
+                            {% if session['avatar_img'] %}
+                            <img src="{{ session['avatar_img'] }}" class="img-circle user-avatar" width="18">
+                            {% else %}
+                            <span class="glyphicon glyphicon-user"></span>
+                            {% endif %}
+                            {{ session['display_name'] }}
+                        </li>
+                        <li><a href="/logout"><span class="glyphicon glyphicon-off"></span> Sign out</a></li>
+                    {% else %}
+                        <li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Sign in</a></li>
+                    {% endif %}
                     </ul>
                 </div><!-- /.navbar-collapse -->
             </div><!-- /.container-fluid -->
@@ -99,7 +106,7 @@
 
         <footer class="navbar navbar-fixed-bottom">
             <div class="container text-center">
-                <small>BastardBot [¬º-°]¬</small>
+                <small>BastardBot [¬º-°]¬ | {{ timestamp }}</small>
             </div>
         </footer>
 
