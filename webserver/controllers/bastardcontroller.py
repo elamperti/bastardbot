@@ -7,6 +7,10 @@ from models import Conversation, User, Message
 
 class BastardController(BaseController):
     @cherrypy.expose
+    def default(self,*args,**kwargs):
+      return '404 Not Found'
+
+    @cherrypy.expose
     @template("home")
     def index(self, *args, **kwargs):
         return {}
