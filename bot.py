@@ -1,11 +1,13 @@
 import logging
+from datetime import date
 from bot import BotMain
 
 if __name__ == "__main__":
     logging.basicConfig(
         format="[%(asctime)s] %(name)s/%(levelname)-6s - %(message)s", 
         level=logging.CRITICAL,
-        datefmt='%Y-%m-%d %H:%M:%S'
+        datefmt="%Y-%m-%d %H:%M:%S",
+        filename="logs/" + date.today().strftime('%Y-%m-%d_bot.log')
     )
     # Only enable debug level for bbot
     logger = logging.getLogger("bastardbot")
