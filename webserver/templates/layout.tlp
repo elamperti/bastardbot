@@ -51,12 +51,9 @@
                     <ul class="nav navbar-nav navbar-right">
                     {% if session['logged'] %}
                         <li class="navbar-text">
-                            {% if session['avatar_img'] %}
-                            <img src="{{ session['avatar_img'] }}" class="img-circle user-avatar" width="18">
-                            {% else %}
-                            <span class="glyphicon glyphicon-user"></span>
-                            {% endif %}
-                            {{ session['display_name'] }}
+                            <img src="{{ session['avatar_img'] }}" class="img-circle user-avatar" 
+                                 width="18" alt="{{ session['display_name'] }}" />
+                            <span title="{{ session['gaia_id'] }}">{{ session['display_name'] }}</span>
                         </li>
                         <li><a href="/logout"><span class="glyphicon glyphicon-off"></span> Sign out</a></li>
                     {% else %}
