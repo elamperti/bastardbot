@@ -1,0 +1,8 @@
+[Core]
+Name = Deskeeper
+Module = deskeeper
+
+[Documentation]
+Author = Enrico Lamperti
+Version = 0.1
+Description = Puts table back when you flip it

@@ -1,0 +1,8 @@
+[Core]
+Name = URLFilter
+Module = url
+
+[Documentation]
+Author = Enrico Lamperti
+Version = 0.1
+Description = Filter and collect URLs

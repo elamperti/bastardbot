@@ -1,0 +1,8 @@
+[Core]
+Name = Test
+Module = test
+
+[Documentation]
+Author = Christian Musa
+Version = 0.1
+Description = Test plugin

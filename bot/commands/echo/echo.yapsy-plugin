@@ -1,0 +1,8 @@
+[Core]
+Name = Echo
+Module = echo
+
+[Documentation]
+Author = Christian Musa
+Version = 0.1
+Description = Echoes whatever you say. It won't judge you.
