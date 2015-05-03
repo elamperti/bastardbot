@@ -1,0 +1,8 @@
+[Core]
+Name = Nickname
+Module = nickname
+
+[Documentation]
+Author = Christian Musa
+Version = 0.1
+Description = Allows you to set your own nick for BastardBot.

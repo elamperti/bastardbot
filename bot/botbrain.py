@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # coding=utf-8
-import re
+
+from yapsy.PluginManager import PluginManager
+# Plugin categories
+from bot.ICommandPlugin import ICommandPlugin
+from bot.IFilterPlugin import IFilterPlugin
 
 from models import *
 
@@ -10,9 +14,32 @@ class BotBrain(object):
 
         #botdb.drop_tables([User, Conversation, Message], safe=True)
         botdb.create_tables([User, Conversation, Message], safe=True)
-        self.__commands = ['echo', 'test', 'alias', 'config']
-        self._url_pattern = re.compile(r"\b((?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))", re.IGNORECASE)
 
+        # Init plugins
+        print ("Looking for plugins...")
+        self._plugins = PluginManager(categories_filter={
+            "Command" : ICommandPlugin,
+            "Filter"  : IFilterPlugin
+        })
+        self._plugins.setPluginPlaces(['bot/commands/', 'bot/filters/'])
+        self._plugins.collectPlugins()
+
+        # Load slash commands
+        self.__commands = {}
+        print ("╠ Commands")
+        for plugin in self._plugins.getPluginsOfCategory("Command"):
+            print ("║  * Found «%s»" % plugin.name)
+            for cmdname in plugin.plugin_object.aliases:
+                self.__commands[cmdname] = plugin.plugin_object.execute
+                # print ("using slash command '%s'" % cmdname)
+
+        # Load filters
+        print ("╚ Filters")
+        self.filters = self._plugins.getPluginsOfCategory("Filter")
+        for plugin in self.filters:
+            print ("   * Found «%s»" % plugin.name)
+
+        print ("Done.\n")
 
     def register_user(self, full_name, gaia_id, alias=None):
         if not alias:
@@ -32,42 +59,28 @@ class BotBrain(object):
         #print("[{}]{}: {} [{}]"
         #      .format(conversation_id, author, message, timestamp))
 
-        db_conv = Conversation.get(Conversation.conv_id == conversation_id)
-        db_author = User.get(User.gaia_id == author)
-
-        url_matches = self._url_pattern.match(message)
-        if url_matches:
-            urls = url_matches.groups()
-            for url in urls:
-                if url:
-                    Message.create(content=url, conversation=db_conv, author=db_author, message_type=2, date_created=timestamp)
+        context = {
+            'conversation_id': conversation_id,
+            'author'   : author,
+            'message'  : message,
+            'timestamp': timestamp,
+            'callback' : callback
+        }
 
         if message.startswith("/"):
-            command = message.split(" ", 1)[0].strip("/")
-            message = message.replace("/%s" % command, "").strip()
+            command, context['message'] = message.split(" ", 1)
+            command = command.strip("/")
+
+            print (context['message'])
             if command in self.__commands:
-                getattr(self, "handle_cmd_%s" % command)(conversation_id, author, message, timestamp, callback)
+                context['command'] = command
+                self.__commands[command](context.pop('callback'), **context)
 
-    def handle_cmd_echo(self, conversation_id, author, message, timestamp, callback):
-        callback(conversation_id, message.replace('/echo ', ''))
+        else: # Filter it!
+            for filter in self.filters:
+                filter.apply(**context)
 
-    def handle_cmd_test(self, conversation_id, author, message, timestamp, callback):
-        callback(conversation_id, "test is ok")
-
-    def handle_cmd_alias(self, conversation_id, author, message, timestamp, callback):
-        try:
-            user = User.get(User.gaia_id == author)
-            cmdargs = message.split(" ")[1::]
-            if len(cmdargs) == 1 and cmdargs[0]:
-                cmdargs = cmdargs.pop()
-                user.alias = cmdargs
-                user.save()
-                callback(conversation_id, "alias set to %s" % cmdargs)
-            else:
-                callback(conversation_id, "your alias is %s" % user.alias)    
-        except:
-            callback(conversation_id, "user not registered")
-
+    # FIXME: create a plugin to replicate this
     def handle_cmd_config(self, conversation_id, author, message, timestamp, callback):
         if message.find(" ") != -1:
             key, value = message.split(" ", 1)
