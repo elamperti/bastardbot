@@ -11,7 +11,7 @@ class BotBrain(object):
         #botdb.drop_tables([User, Conversation, Message], safe=True)
         botdb.create_tables([User, Conversation, Message], safe=True)
         self.__commands = ['echo', 'test', 'alias', 'config']
-        self._url_pattern = re.compile(r"(?i)\b((?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))", re.IGNORECASE)
+        self._url_pattern = re.compile(r"\b((?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))", re.IGNORECASE)
 
 
     def register_user(self, full_name, gaia_id, alias=None):
@@ -32,26 +32,21 @@ class BotBrain(object):
         #print("[{}]{}: {} [{}]"
         #      .format(conversation_id, author, message, timestamp))
 
-        ########### DEBUG -z
         db_conv = Conversation.get(Conversation.conv_id == conversation_id)
         db_author = User.get(User.gaia_id == author)
 
-        Message.create(content=message, conversation=db_conv, author=db_author, message_type=1, date_created=timestamp)
-        ########### /DEBUG -z
-
-        urls = self._url_pattern.findall(message)
-        print (urls)
-        if urls:
+        url_matches = self._url_pattern.match(message)
+        if url_matches:
+            urls = url_matches.groups()
             for url in urls:
-                print("FOUND URL! " + url)
-                Message.create(content=url, conversation=db_conv, author=db_author, message_type=2, date_created=timestamp)
+                if url:
+                    Message.create(content=url, conversation=db_conv, author=db_author, message_type=2, date_created=timestamp)
 
         if message.startswith("/"):
             command = message.split(" ", 1)[0].strip("/")
             message = message.replace("/%s" % command, "").strip()
             if command in self.__commands:
-                getattr(self, "handle_cmd_%s" % command)(conversation_id, author, 
-                                                         message, timestamp, callback)
+                getattr(self, "handle_cmd_%s" % command)(conversation_id, author, message, timestamp, callback)
 
     def handle_cmd_echo(self, conversation_id, author, message, timestamp, callback):
         callback(conversation_id, message.replace('/echo ', ''))

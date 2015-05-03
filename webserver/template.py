@@ -5,7 +5,11 @@ import datetime
 
 import cherrypy
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
+import arrow
 
+def arrow_humanize(value):
+    obj = arrow.get(value)
+    return obj.humanize()
 
 def template(filename=None):  # , *args, **kwargs
     def wrap(f, *args, **kwargs):
@@ -15,6 +19,7 @@ def template(filename=None):  # , *args, **kwargs
                 loader=FileSystemLoader('webserver/templates'),
                 extensions=['jinja2.ext.with_']
             )
+            jinja.filters['humanize'] = arrow_humanize
 
             if not filename:
                 raise cherrypy.HTTPError(500, "Template not defined")

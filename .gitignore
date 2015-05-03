@@ -4,3 +4,4 @@ sessions/*
 *.sqlite
 .python-version
 webserver/sessions/*
+webserver/config/google-api.json
