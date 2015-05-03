@@ -23,14 +23,8 @@ class BastardController(BaseController):
     @cherrypy.expose
     @template("links")
     def links(self, page=1):
-        #FIXME: This method is asking for messages but the layout is parsing (undefined) links.
-        res = cherrypy.thread_data.db.get_messages() #type=2
-        links = []
-        
-        for item in res:
-            links.append(cherrypy.thread_data.db.dict_factory(item))
-
-        return {'links': links}
+        messages = Message.select().where(Message.message_type == 2)
+        return {'messages': messages}
 
     @cherrypy.expose
     @template("log")
@@ -46,7 +40,7 @@ class BastardController(BaseController):
 
             # Now we know there is a conversation with that ID, check for messages
             try:
-                messages = Message.select().where(Message.conversation == conversation)
+                messages = Message.select().where(Message.conversation == conversation and Message.message_type == 1)
                 print (messages)
                 return {'conversation': conversation, 'messages': messages}
             except:

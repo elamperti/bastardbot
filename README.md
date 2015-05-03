@@ -40,4 +40,6 @@ The first time you start BastardBot, you will be prompted to log into your Googl
 account by the hangups library. It only sends your credentials to Google, and it 
 stores session cookies locally.
 
+---
+
 Documentation, help and feedback are welcome.

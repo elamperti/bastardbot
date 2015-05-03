@@ -1,0 +1,20 @@
+{% extends "layout.tlp" %}
+{% set title='Links' %}
+{% set breadcrumb=[('/', "BastardBot"), ('links', "Links")] %}
+{% set header_title='Link collection' %}
+
+{% block mainContent %}
+	{% if no_messages == 1 or messages.count() == 0 %}
+		<div class="alert alert-warning">No links available.</div>
+	{% else %}
+	    <ul class="list-group">
+	    {% for message in messages %}
+	        <li class="list-group-item">
+	            <a class="h4 text-info" href="{{ message.content }}"><strong>{{ message.content }}</strong></a>
+	        	<br><small class="text-muted">by {{ message.author.display_name }}</small>
+	        </li>
+	    {% endfor %}
+	    </ul>
+	{% endif %}
+{% endblock %}
+

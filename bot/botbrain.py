@@ -1,14 +1,18 @@
 #!/usr/bin/env python
-# coding=utf
+# coding=utf-8
+import re
 
 from models import *
 
 class BotBrain(object):
     def __init__(self):
         botdb.connect()
+
         #botdb.drop_tables([User, Conversation, Message], safe=True)
         botdb.create_tables([User, Conversation, Message], safe=True)
         self.__commands = ['echo', 'test', 'alias', 'config']
+        self._url_pattern = re.compile(r"(?i)\b((?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))", re.IGNORECASE)
+
 
     def register_user(self, full_name, gaia_id, alias=None):
         if not alias:
@@ -34,6 +38,13 @@ class BotBrain(object):
 
         Message.create(content=message, conversation=db_conv, author=db_author, message_type=1, date_created=timestamp)
         ########### /DEBUG -z
+
+        urls = self._url_pattern.findall(message)
+        print (urls)
+        if urls:
+            for url in urls:
+                print("FOUND URL! " + url)
+                Message.create(content=url, conversation=db_conv, author=db_author, message_type=2, date_created=timestamp)
 
         if message.startswith("/"):
             command = message.split(" ", 1)[0].strip("/")
