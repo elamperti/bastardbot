@@ -1,6 +1,6 @@
 [Core]
-Name = URL Filter
-Module = urlfilter
+Name = URLFilter
+Module = url
 
 [Documentation]
 Author = Enrico Lamperti

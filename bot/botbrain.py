@@ -71,14 +71,13 @@ class BotBrain(object):
             command, context['message'] = message.split(" ", 1)
             command = command.strip("/")
 
-            print (context['message'])
             if command in self.__commands:
                 context['command'] = command
                 self.__commands[command](context.pop('callback'), **context)
 
         else: # Filter it!
             for filter in self.filters:
-                filter.apply(**context)
+                filter.plugin_object.apply(**context)
 
     # FIXME: create a plugin to replicate this
     def handle_cmd_config(self, conversation_id, author, message, timestamp, callback):
